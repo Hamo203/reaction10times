@@ -22,7 +22,7 @@ print("REDIS CONNECT SETUP")
 
 redis_url = os.getenv("REDIS_URL")  # or REDIS_TLS_URL / REDISS_URL
 
-r = redis.Redis(
+r = redis.from_url( #host,port,password打つ場合→redis.Redis
     #host=os.getenv("REDISHOST"),
     #port=int(os.getenv("REDISPORT", 6379)),
     #password=os.getenv("REDISPASSWORD"),
