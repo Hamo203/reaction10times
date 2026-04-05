@@ -16,7 +16,17 @@ base_url = os.getenv("BASE_URL") #config.BASE_URL
 channel_id = os.getenv("CHANNEL_ID") #config.CHANNEL_ID
 
 
-r = redis.Redis(host="localhost", port=6379, db=0)
+#r = redis.Redis(host="localhost", port=6379, db=0)
+
+print("REDIS CONNECT SETUP")
+
+r = redis.Redis(
+    host=os.getenv("REDISHOST"),
+    port=int(os.getenv("REDISPORT", 6379)),
+    password=os.getenv("REDISPASSWORD"),
+    decode_responses=True,
+)
+
 
 def on_open(ws):
     print("CONNECTED")
