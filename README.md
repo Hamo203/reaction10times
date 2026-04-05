@@ -23,20 +23,19 @@ WebSocket を用いて Mattermost に常時接続し、
 - Railway
 - GitHub
 ---
-
-## 構成図（論理構成）
-Mattermost
-   │ WebSocket
-   ▼
-Reaction Bot (Python / Railway)
-   │
-   ▼
-Redis (Railway Plugin)
----
 ## 動作要件
 - Mattermost Bot 作成・権限付与済みであること
 - Railway アカウント
 - GitHub アカウント
 
-
-
+---
+## Railway にデプロイ
+- Railway にログイン
+- New Project → Deploy from GitHub Repo
+- 対象のリポジトリを選択
+---
+## Redis Plugin を追加
+- Project 画面で Add
+- Database / Plugin → Redis
+- Redis Service が Project 内に追加される
+- Python Service 側の Variables にREDIS_URLを追加
