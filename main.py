@@ -1,6 +1,6 @@
 import requests
 import json
-import config
+#import config
 import websocket
 import ssl
 import time
