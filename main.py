@@ -43,6 +43,7 @@ def on_open(ws):
     }))
 
 def on_message(ws, message):
+    print("RAW EVENT:", message[:300])
     try:
         data = json.loads(message)
     except:
