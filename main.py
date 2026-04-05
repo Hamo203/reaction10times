@@ -20,10 +20,13 @@ channel_id = os.getenv("CHANNEL_ID") #config.CHANNEL_ID
 
 print("REDIS CONNECT SETUP")
 
+redis_url = os.getenv("REDIS_URL")  # or REDIS_TLS_URL / REDISS_URL
+
 r = redis.Redis(
-    host=os.getenv("REDISHOST"),
-    port=int(os.getenv("REDISPORT", 6379)),
-    password=os.getenv("REDISPASSWORD"),
+    #host=os.getenv("REDISHOST"),
+    #port=int(os.getenv("REDISPORT", 6379)),
+    #password=os.getenv("REDISPASSWORD"),
+    redis_url,
     decode_responses=True,
 )
 
