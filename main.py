@@ -8,6 +8,12 @@ import requests
 import redis
 import psutil
 
+import os
+
+token = os.getenv("TOKEN") #config.TOKEN
+ws_url = os.getenv("WS_URL") #config.WS_URL
+base_url = os.getenv("BASE_URL") #config.BASE_URL
+channel_id = os.getenv("CHANNEL_ID") #config.CHANNEL_ID
 
 
 r = redis.Redis(host="localhost", port=6379, db=0)
@@ -20,7 +26,7 @@ def on_open(ws):
     ws.send(json.dumps({
         "seq": 1,
         "action": "authentication_challenge",
-        "data": {"token": config.TOKEN}
+        "data": {"token": token}
     }))
 
 def on_message(ws, message):
@@ -64,8 +70,8 @@ def on_message(ws, message):
 def repost(post_id):
     # 元投稿取得
     res_post = requests.get(
-        f"{config.BASE_URL}/api/v4/posts/{post_id}",
-        headers={"Authorization": f"Bearer {config.TOKEN}"}
+        f"{base_url}/api/v4/posts/{post_id}",
+        headers={"Authorization": f"Bearer {token}"}
     )
     post = res_post.json()
 
@@ -73,13 +79,13 @@ def repost(post_id):
     message = post["message"]
 
     res = requests.post(
-        f"{config.BASE_URL}/api/v4/posts",
+        f"{base_url}/api/v4/posts",
         headers={
-            "Authorization": f"Bearer {config.TOKEN}",
+            "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
         },
         json={
-            "channel_id": config.CHANNEL_ID,
+            "channel_id": channel_id,
             "message": f"再投稿\n{message}",
         }
     )
@@ -95,7 +101,7 @@ def on_close(ws, code, msg):
 while True:
     try:
         ws = websocket.WebSocketApp(
-            config.WS_URL,
+            ws_url,
             on_open=on_open,
             on_message=on_message,
             on_error=on_error,
