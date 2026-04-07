@@ -48,8 +48,11 @@ def on_message(ws, message):
         data = json.loads(message)
     except:
         return
-
-    if data.get("event") != "reaction_added":
+    
+    event = data.get("event")
+    
+    # reaction_added もしくは reaction_removed イベント以外は無視
+    if event not in ("reaction_added", "reaction_removed"):
         return
 
     reaction_data = data.get("data", {}).get("reaction")
@@ -63,23 +66,28 @@ def on_message(ws, message):
         reaction = reaction_data
 
     post_id = reaction.get("post_id")
-    user_id = reaction.get("user_id")
-
     if not post_id:
         return
 
-    #カウント(同じ人OK）
     key = f"count:{post_id}"
-    count = r.incr(key)
+    #10回で再投稿
+    flag = f"done:{post_id}"
+    
+    if event == "reaction_added":
+        #カウント(同じ人OK）
+        count = r.incr(key)
+    else: #reaction_removed
+        count = r.decr(key)
 
     print(f"COUNT: {count}")
 
-    #10回で再投稿
-    flag = f"done:{post_id}"
-
-    if count >= 10 and not r.exists(flag):
-        r.set(flag, 1)
-        repost(post_id)
+    
+    if event == "reaction_added":
+        if count >= 10 and not r.exists(flag):
+            r.set(flag, 1)
+            repost(post_id)
+    
+    
 
 def repost(post_id):
     # 元投稿取得
