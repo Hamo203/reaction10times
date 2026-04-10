@@ -44,6 +44,7 @@ def on_open(ws):
 
 
 
+# reaction_added / reaction_removed イベントの処理
 def handle_reaction(data):
     event = data.get("event")
 
@@ -88,6 +89,9 @@ def handle_posted(data):
 
     print("POST KEYS:", post.keys())
     print("ROOT_ID:", post.get("root_id"))
+
+    reply_count = post.get("reply_count")
+    print("REPLY_COUNT:", reply_count)
 
     if not post.get("root_id"):
         print("これは root 投稿")
