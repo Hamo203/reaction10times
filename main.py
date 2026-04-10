@@ -42,24 +42,10 @@ def on_open(ws):
         "data": {"token": token}
     }))
 
-def on_message(ws, message):
-    print("RAW EVENT:", message[:300])
-    try:
-        data = json.loads(message)
-    except:
-        return
-    
-    event = data.get("event")
-    
-    post_raw = data.get("data", {}).get("post")
-    post = json.loads(post_raw)
 
-    print("POST KEYS:", post.keys())
-    print("ROOT_ID:", post.get("root_id"))
-    
-    # reaction_added もしくは reaction_removed イベント以外は無視
-    if event not in ("reaction_added", "reaction_removed"):
-        return
+
+def handle_reaction(data):
+    event = data.get("event")
 
     reaction_data = data.get("data", {}).get("reaction")
     if not reaction_data:
@@ -93,6 +79,59 @@ def on_message(ws, message):
             r.set(flag, 1)
             repost(post_id)
     
+def handle_posted(data):
+    post_raw = data.get("data", {}).get("post")
+    if not post_raw:
+        return
+
+    post = json.loads(post_raw)
+
+    print("POST KEYS:", post.keys())
+    print("ROOT_ID:", post.get("root_id"))
+
+    if not post.get("root_id"):
+        print("これは root 投稿")
+    else:
+        print("これは返信")
+
+def handle_thread_updated(data):
+    thread = data.get("data", {}).get("thread")
+    if not thread:
+        return
+
+    root_id = thread.get("id")
+    reply_count = thread.get("reply_count")
+
+    print("THREAD:", root_id, reply_count)
+
+def on_message(ws, message):
+    print("RAW EVENT:", message[:300])
+    try:
+        data = json.loads(message)
+    except:
+        return
+    
+    event = data.get("event")
+
+    # ① reaction イベント
+    if event in ("reaction_added", "reaction_removed"):
+        handle_reaction(data)
+        return
+
+    # ② posted イベント（root 投稿 or 返信）
+    if event == "posted":
+        handle_posted(data)
+        return
+
+    # ③ thread_updated イベント（返信数）
+    if event == "thread_updated":
+        handle_thread_updated(data)
+        return
+
+    # その他は無視
+    return
+    
+
     
 
 def repost(post_id):
