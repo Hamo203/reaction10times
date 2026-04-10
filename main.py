@@ -147,7 +147,25 @@ def repost(post_id):
     post = res_post.json()
 
     channel_id = post["channel_id"]
-    message = post["message"]
+    #message = post["message"]
+
+    # team_name を取得
+    res_channel = requests.get(
+        f"{base_url}/api/v4/channels/{channel_id}",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    channel = res_channel.json()
+    team_id = channel["team_id"]
+
+    res_team = requests.get(
+        f"{base_url}/api/v4/teams/{team_id}",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    team = res_team.json()
+    team_name = team["name"]
+
+    # 投稿 URL を組み立てる
+    post_url = f"{base_url}/{team_name}/pl/{post_id}"
 
     res = requests.post(
         f"{base_url}/api/v4/posts",
@@ -157,7 +175,7 @@ def repost(post_id):
         },
         json={
             "channel_id": channel_id,
-            "message": f"再投稿\n{message}",
+            "message": f"にぎわってるスレッド\n{post_url}",
         }
     )
 
