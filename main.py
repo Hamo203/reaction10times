@@ -14,7 +14,7 @@ token = os.getenv("TOKEN") #config.TOKEN
 ws_url = os.getenv("WS_URL") #config.WS_URL
 base_url = os.getenv("BASE_URL") #config.BASE_URL
 channel_id = os.getenv("CHANNEL_ID") #config.CHANNEL_ID
-
+team_name = os.getenv("TEAM_NAME") #config.TEAM_NAME
 
 #r = redis.Redis(host="localhost", port=6379, db=0)
 
@@ -139,31 +139,6 @@ def on_message(ws, message):
     
 
 def repost(post_id):
-    # 元投稿取得
-    res_post = requests.get(
-        f"{base_url}/api/v4/posts/{post_id}",
-        headers={"Authorization": f"Bearer {token}"}
-    )
-    post = res_post.json()
-
-    channel_id = post["channel_id"]
-    #message = post["message"]
-
-    # team_name を取得
-    res_channel = requests.get(
-        f"{base_url}/api/v4/channels/{channel_id}",
-        headers={"Authorization": f"Bearer {token}"}
-    )
-    channel = res_channel.json()
-    team_id = channel["team_id"]
-
-    res_team = requests.get(
-        f"{base_url}/api/v4/teams/{team_id}",
-        headers={"Authorization": f"Bearer {token}"}
-    )
-    team = res_team.json()
-    team_name = team["name"]
-
     # 投稿 URL を組み立てる
     post_url = f"{base_url}/{team_name}/pl/{post_id}"
 
