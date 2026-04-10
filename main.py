@@ -76,6 +76,7 @@ def handle_reaction(data):
 
     
     if event == "reaction_added":
+        #10回以上で再投稿をまだしていない場合
         if count >= 10 and not r.exists(flag):
             # 再投稿してフラグ立てる
             r.set(flag, 1)
@@ -85,8 +86,10 @@ def handle_posted(data):
     post_raw = data.get("data", {}).get("post")
     if not post_raw:
         return
-
+    
     post = json.loads(post_raw)
+    postid=post.get("id")
+    print("post id:", postid)
     reply_count = post.get("reply_count")
 
     if reply_count == 5:
