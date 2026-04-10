@@ -77,6 +77,7 @@ def handle_reaction(data):
     
     if event == "reaction_added":
         if count >= 10 and not r.exists(flag):
+            # 再投稿してフラグ立てる
             r.set(flag, 1)
             repost(post_id)
     
@@ -86,18 +87,14 @@ def handle_posted(data):
         return
 
     post = json.loads(post_raw)
-
-    print("POST KEYS:", post.keys())
-    print("ROOT_ID:", post.get("root_id"))
-
     reply_count = post.get("reply_count")
-    print("REPLY_COUNT:", reply_count)
 
-    if not post.get("root_id"):
-        print("これは root 投稿")
-    else:
-        print("これは返信")
-
+    if reply_count == 5:
+        print("返信数が5以上のスレッドです")
+        root_id = post.get("root_id")
+        repost(root_id)
+    
+    
 def handle_thread_updated(data):
     thread = data.get("data", {}).get("thread")
     if not thread:
