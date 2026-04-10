@@ -51,6 +51,12 @@ def on_message(ws, message):
     
     event = data.get("event")
     
+    post_raw = data.get("data", {}).get("post")
+    post = json.loads(post_raw)
+
+    print("POST KEYS:", post.keys())
+    print("ROOT_ID:", post.get("root_id"))
+    
     # reaction_added もしくは reaction_removed イベント以外は無視
     if event not in ("reaction_added", "reaction_removed"):
         return
