@@ -1,7 +1,7 @@
 name: start-deployment # ワークフローの名前を指定
 on:
   schedule:
-    - cron: '8 15 * * *' # 毎週月曜日から金曜日の9時にワークフローをトリガー
+    - cron: '9 15 * * *' # 毎週月曜日から金曜日の9時にワークフローをトリガー
   workflow_dispatch: # 手動でワークフローをトリガーするためのオプション
 
   
@@ -15,5 +15,4 @@ jobs:
       - name: Dep1oy on Railway
         env:
           API_KEY: ${{ secrets.RAILWAY_TOKEN }} # APIキーを環境変数として設定
-        run: 
-          run: railway up --service ${{ secrets.RAILWAY_SERVICE_NAME }}
+        run: railway up --service ${{ secrets.RAILWAY_SERVICE_NAME }}

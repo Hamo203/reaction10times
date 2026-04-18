@@ -15,5 +15,4 @@ jobs:
       - name: Stop on Railway
         env:
           API_KEY: ${{ secrets.RAILWAY_TOKEN }} # APIキーを環境変数として設定
-        run: 
-          run: railway down --service ${{ secrets.RAILWAY_SERVICE_NAME }}
+        run: railway down --service ${{ secrets.RAILWAY_SERVICE_NAME }}
