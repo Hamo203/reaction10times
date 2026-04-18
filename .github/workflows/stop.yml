@@ -6,13 +6,15 @@ on:
 
   
 jobs:
-  build:
-    runs-on: ubuntu-latest # ジョブが実行される環境を指定
+  stop:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/railwayapp/cli:latest # Railway公式のツールボックスを直接使う
     steps:
-      - uses: actions/checkout@v4 # コードをチェックアウトするアクション
-      - name: Install Railway CLI # APIコードを呼び出すステップ
-        run: npm i -g @railway/cli #Node.js ver 16 以上が必要
-      - name: Stop on Railway
+      - name: Stop Railway Service
+        shell: sh
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}  # APIキーを環境変数として設定
-        run: railway down -y --service ${{ secrets.RAILWAY_SERVICE_NAME }} 
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          export CI=true
+          railway down --service ${{ secrets.RAILWAY_SERVICE_NAME }}
