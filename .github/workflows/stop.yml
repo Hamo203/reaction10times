@@ -1,8 +1,7 @@
 name: stop-deployment # ワークフローの名前を指定
 on:
   schedule:
-    - cron: '10 0 * * *' # 毎週月曜日から金曜日の17時にワークフローをトリガー
-  timezone: 'Asia/Tokyo' # タイムゾーンを日本時間に設定
+    - cron: '11 15 * * *' # 毎週月曜日から金曜日の17時にワークフローをトリガー
   workflow_dispatch: # 手動でワークフローをトリガーするためのオプション
 
   
