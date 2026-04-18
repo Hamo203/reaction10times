@@ -1,7 +1,7 @@
 name: stop-deployment # ワークフローの名前を指定
 on:
   schedule:
-    - cron: '20 15 * * *' # 毎週月曜日から金曜日の17時にワークフローをトリガー
+    - cron: '23 15 * * *' # 毎週月曜日から金曜日の17時にワークフローをトリガー
   workflow_dispatch: # 手動でワークフローをトリガーするためのオプション
 
   
@@ -14,5 +14,5 @@ jobs:
         run: npm i -g @railway/cli #Node.js ver 16 以上が必要
       - name: Stop on Railway
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }} --force # APIキーを環境変数として設定
-        run: railway down --service ${{ secrets.RAILWAY_SERVICE_NAME }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}  # APIキーを環境変数として設定
+        run: railway down --service ${{ secrets.RAILWAY_SERVICE_NAME }} --force
