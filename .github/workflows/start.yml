@@ -1,7 +1,7 @@
 name: start-deployment # ワークフローの名前を指定
 on:
   schedule:
-    - cron: '9 15 * * *' # 毎週月曜日から金曜日の9時にワークフローをトリガー
+    - cron: '14 15 * * *' # 毎週月曜日から金曜日の9時にワークフローをトリガー
   workflow_dispatch: # 手動でワークフローをトリガーするためのオプション
 
   
@@ -9,10 +9,10 @@ jobs:
   build:
     runs-on: ubuntu-latest # ジョブが実行される環境を指定
     steps:
-      - uses: actions/checkout@v2 # コードをチェックアウトするアクション
+      - uses: actions/checkout@v4 # コードをチェックアウトするアクション
       - name: Install Railway CLI # APIコードを呼び出すステップ
         run: npm i -g @railway/cli #Node.js ver 16 以上が必要
       - name: Dep1oy on Railway
         env:
-          API_KEY: ${{ secrets.RAILWAY_TOKEN }} # APIキーを環境変数として設定
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }} # APIキーを環境変数として設定
         run: railway up --service ${{ secrets.RAILWAY_SERVICE_NAME }}
