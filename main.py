@@ -1,6 +1,6 @@
 import requests
 import json
-#import config
+import config
 import websocket
 import ssl
 import time
@@ -10,25 +10,29 @@ import psutil
 
 import os
 
-token = os.getenv("TOKEN") #config.TOKEN
-ws_url = os.getenv("WS_URL") #config.WS_URL
-base_url = os.getenv("BASE_URL") #config.BASE_URL
-channel_id = os.getenv("CHANNEL_ID") #config.CHANNEL_ID
-team_name = os.getenv("TEAM_NAME") #config.TEAM_NAME
+token = config.TOKEN # railway の場合は os.getenv("TOKEN") 
+ws_url = config.WS_URL # os.getenv("WS_URL")
+base_url = config.BASE_URL # os.getenv("BASE_URL")
+channel_id = config.CHANNEL_ID # os.getenv("CHANNEL_ID")
+team_name = config.TEAM_NAME # os.getenv("TEAM_NAME")
 
 #r = redis.Redis(host="localhost", port=6379, db=0)
 
 print("REDIS CONNECT SETUP")
+print("WS_URL:", ws_url)
+print("BASE_URL:", base_url)
+print("TOKEN exists:", bool(token))
 
-redis_url = os.getenv("REDIS_URL")  # or REDIS_TLS_URL / REDISS_URL
+redis_url = config.REDIS_PUBLIC_URL # os.getenv("REDIS_URL")  # or REDIS_TLS_URL / REDISS_URL
 
-r = redis.from_url( #host,port,password打つ場合→redis.Redis
-    #host=os.getenv("REDISHOST"),
-    #port=int(os.getenv("REDISPORT", 6379)),
-    #password=os.getenv("REDISPASSWORD"),
-    redis_url,
-    decode_responses=True,
-)
+if not redis_url:
+    print(" REDIS_URL not set")
+    r = None
+else:
+    print(" REDIS_URL:", redis_url)
+    r = redis.from_url(redis_url, decode_responses=True)
+
+
 
 
 def on_open(ws):
@@ -46,6 +50,7 @@ def on_open(ws):
 
 # reaction_added / reaction_removed イベントの処理
 def handle_reaction(data):
+    print("HANDLE REACTION")
     event = data.get("event")
 
     reaction_data = data.get("data", {}).get("reaction")
@@ -66,11 +71,13 @@ def handle_reaction(data):
     #10回で再投稿
     flag = f"done:{post_id}"
     
+    print("before incr")
     if event == "reaction_added":
         #カウント(同じ人OK）
         count = r.incr(key)
     else: #reaction_removed
         count = r.decr(key)
+    print("after incr")
 
     print(f"COUNT: {count}")
 
@@ -83,6 +90,7 @@ def handle_reaction(data):
             repost(post_id)
     
 def handle_posted(data):
+    print("HANDLE POSTED")
     post_raw = data.get("data", {}).get("post")
     if not post_raw:
         return
@@ -99,6 +107,7 @@ def handle_posted(data):
     
     
 def handle_thread_updated(data):
+    print("HANDLE THREAD UPDATED")
     thread = data.get("data", {}).get("thread")
     if not thread:
         return
@@ -139,6 +148,7 @@ def on_message(ws, message):
     
 
 def repost(post_id):
+    print("REPOSTING:", post_id)
     # 投稿 URL を組み立てる
     post_url = f"{base_url}/{team_name}/pl/{post_id}"
 
@@ -163,6 +173,7 @@ def on_close(ws, code, msg):
     print("CLOSED:", code, msg)
 
 while True:
+    print("CONNECTING...")
     try:
         ws = websocket.WebSocketApp(
             ws_url,
